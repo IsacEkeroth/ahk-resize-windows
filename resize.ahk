@@ -1,7 +1,7 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance force
 
-; ~^s::reload
+~^s::reload
 
 modkey := "alt"
 minimizeOnMaximized := true
@@ -56,7 +56,8 @@ main(_)
         return
     }
 
-    if (minimizeOnMaximized) {
+    ; Minimize if enabled
+    if (WinGetMinMax(pid) = 1 and minimizeOnMaximized) {
         WinGetPos &x, &y,,, pid
         WinRestore pid
         WinMove x, y,,pid
