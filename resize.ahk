@@ -2,7 +2,7 @@
 #SingleInstance force
 
 ; Options
-modKey := "LWin"
+modKey := "alt"
 minimizeOnMaximized := true
 
 CoordMode "mouse", "screen"
