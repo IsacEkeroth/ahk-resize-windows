@@ -1,13 +1,18 @@
 #Requires AutoHotkey v2.0
 #SingleInstance force
 
-~^s::reload
-
+; Options
 modKey := "alt"
 minimizeOnMaximized := true
 
+CoordMode "mouse", "screen"
+
+monitorWidth := sysget(16)
+monitorHeight := sysget(17)
+
 hotif "not filters()"
-hotkey modkey " & RButton", resize; If windows with is bigger than monitor witdh set it witin the monitor width
+hotkey modKey " & LButton", move
+hotkey modkey " & RButton", resize
 hotif
 
 #hotif not filters()
@@ -16,7 +21,7 @@ filters() {
 
     MouseGetPos ,, &pid
     ; disable hotkey if desktop is active
-    if (WinGetTitle(pid) = "Program Manager") {
+    if (WinGetTitle(pid) = "Program Manager" or WinGetTitle(pid) = "") {
         return true
     }
 
@@ -36,40 +41,65 @@ filters() {
 
 resize(_)
 {
-    blockinput "on"
-
+    blockinput "MouseMove"
     ; Get window under mouse
     MouseGetPos ,, &pid
+    WinSetAlwaysOnTop 1, pid
+    WinGetPos &x, &y, &w, &h, pid
+
+    ; Unmaximize if enabled
+    if (WinGetMinMax(pid) = 1 and minimizeOnMaximized)
+        WinRestore pid
+
+    ; Moving windows multiple times makes it less consistent
+    ; Scales the window to the bounds of the monitors
+    isOutsideX := (x + w > (monitorWidth - 10))
+    isOutsideY := (y + h > (monitorHeight - 10))
+
+    if isOutsideX and isOutsideY
+        WinMove x,y , monitorWidth - x - 10, monitorHeight - y - 10, pid
+    else if isOutsideX
+        WinMove x, , monitorWidth - x - 10,, pid
+    else if isOutsideY
+        WinMove ,y,,monitorHeight - y - 10, pid
+
+
+    ; moves mouse to corner of the window and resizes until modkey is let go
+    WinGetPos &x, &y,&w, &h, pid
+
+    DllCall("SetCursorPos", "int", x + w - 2, "int", y + h - 2)
+
+    ; Release leftclick if held to prevent errors
+    send "{click up}"
+    send "{click down}"
+    blockinput "MouseMoveOff"
+
+    keyWait modkey
+    keyWait "RButton"
+
+    send "{click up}"
+    WinSetAlwaysOnTop 0, pid
+}
+
+
+move(_) {
+    MouseGetPos &mX,&mY,&pid
     WinGetPos &x, &y, &w, &h, pid
 
     ; Unmaximize if enabled
     if (WinGetMinMax(pid) = 1 and minimizeOnMaximized) {
         WinRestore pid
-        winmove x,y,,pid
+        winmove x, y, w, h, pid
     }
 
-    ; If window height is bigger than monitor height set it within the monitor height
-    if y + h > (sysget(17) - 10)
-        WinMove ,y,,sysget(17) - y - 10, pid
+    xOffset := x - mX
+    yOffset := y - my
 
-    ; If windows with is bigger than monitor witdh set it witin the monitor width
-    if x + w > (sysget(16) - 10)
-        WinMove x, , sysget(16) - x - 10,, pid
-
-
-    ; moves mouse to corner of the window and resizes until modkey is let go
-    WinGetPos &x, &y,&w, &h, pid
-    DllCall("SetCursorPos", "int", x + w - 1, "int", y + h - 1)
-    send "{click down}"
-
-    blockinput "off"
-
-    keyWait "Alt"
-    keyWait "RButton"
-
-    send "{click up}"
+    while getKeyState(modkey) {
+        MouseGetPos &mX,&mY
+        winmove mX + xOffset, mY + yOffset, ,,pid
+    }
 }
-
 
 
 
