@@ -18,8 +18,16 @@ minimizeOnMaximized := true
 ```
 [Keyname refrence](https://www.autohotkey.com/docs/v2/KeyList.htm)
 ### Maximize behaivour
+Decides if resizing and moving should happen on maximized windows
 
-## Note 
+To change the behavior change the option on the sixth line
+example turning it off
+```ahk
+; Options
+modKey := "alt"
+minimizeOnMaximized := false
+```
+## Notes
 ### inconsistent resizing
 Block input may not work correctly if not ran as administrator.
 
@@ -27,4 +35,4 @@ Block input may not work correctly if not ran as administrator.
 As far as I know this is a limitation of ahk or the underlying windows apis for moving windows.
 
 ## Credits
-fullscreen check by Nigh https://github.com/Nigh/isFullScreen
+Fullscreen check by Nigh https://github.com/Nigh/isFullScreen
