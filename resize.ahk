@@ -39,49 +39,6 @@ filters() {
 }
 
 
-resize(_)
-{
-    blockinput "MouseMove"
-    ; Get window under mouse
-    MouseGetPos ,, &pid
-    WinSetAlwaysOnTop 1, pid
-    WinGetPos &x, &y, &w, &h, pid
-
-    ; Unmaximize if enabled
-    if (WinGetMinMax(pid) = 1 and minimizeOnMaximized)
-        WinRestore pid
-
-    ; Moving windows multiple times makes it less consistent
-    ; Scales the window to the bounds of the monitors
-    isOutsideX := (x + w > (monitorWidth - 10))
-    isOutsideY := (y + h > (monitorHeight - 10))
-
-    if isOutsideX and isOutsideY
-        WinMove x,y , monitorWidth - x - 10, monitorHeight - y - 10, pid
-    else if isOutsideX
-        WinMove x, , monitorWidth - x - 10,, pid
-    else if isOutsideY
-        WinMove ,y,,monitorHeight - y - 10, pid
-
-
-    ; moves mouse to corner of the window and resizes until modkey is let go
-    WinGetPos &x, &y,&w, &h, pid
-
-    DllCall("SetCursorPos", "int", x + w - 2, "int", y + h - 2)
-
-    ; Release leftclick if held to prevent errors
-    send "{click up}"
-    send "{click down}"
-    blockinput "MouseMoveOff"
-
-    keyWait modkey
-    keyWait "RButton"
-
-    send "{click up}"
-    WinSetAlwaysOnTop 0, pid
-}
-
-
 move(_) {
     MouseGetPos &mX,&mY,&pid
     WinGetPos &x, &y, &w, &h, pid
@@ -93,12 +50,41 @@ move(_) {
     }
 
     xOffset := x - mX
-    yOffset := y - my
+    yOffset := y - mY
 
-    while getKeyState(modkey) {
+    while getKeyState(modkey) and getKeyState("LButton", "P") {
         MouseGetPos &mX,&mY
         winmove mX + xOffset, mY + yOffset, ,,pid
     }
+}
+
+resize(_)
+{
+    blockinput "MouseMove"
+    ; Get window under mouse
+    MouseGetPos &mX, &mY, &pid
+    WinGetPos &x, &y, &w, &h, pid
+
+    ; Unmaximize if enabled
+    if (WinGetMinMax(pid) = 1 and minimizeOnMaximized)
+        WinRestore pid
+
+    ; Determine nearest corner for resizing
+    nearestCornerX := (mX - x < w / 2) ? x : x + w
+    nearestCornerY := (mY - y < h / 2) ? y : y + h
+
+    ; Move mouse to the nearest corner
+    DllCall("SetCursorPos", "int", nearestCornerX, "int", nearestCornerY)
+
+    send "{click down}"
+    blockinput "MouseMoveOff"
+
+    while getKeyState(modkey) and getKeyState("RButton", "P") {
+        ; The resizing happens as the mouse moves
+    }
+
+    send "{click up}"
+    WinSetAlwaysOnTop 0, pid
 }
 
 
