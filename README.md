@@ -17,7 +17,7 @@ modKey := "ctrl"
 minimizeOnMaximized := true
 ```
 [Keyname refrence](https://www.autohotkey.com/docs/v2/KeyList.htm)
-### Maximize behaivour
+### Maximize behaviour
 Decides if resizing and moving should happen on maximized windows
 
 To change the behavior change the option on the sixth line
