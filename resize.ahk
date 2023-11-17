@@ -2,7 +2,7 @@
 #SingleInstance force
 
 ; Options
-modKey := "alt"
+modKey := "LWin"
 minimizeOnMaximized := true
 
 CoordMode "mouse", "screen"
@@ -41,14 +41,15 @@ filters() {
 
 move(_) {
     MouseGetPos &mX,&mY,&pid
-    WinGetPos &x, &y, &w, &h, pid
 
     ; Unmaximize if enabled
     if (WinGetMinMax(pid) = 1 and minimizeOnMaximized) {
         WinRestore pid
-        winmove x, y, w, h, pid
+        Sleep(100)
     }
 
+    WinGetPos &x, &y, &w, &h, pid
+    
     xOffset := x - mX
     yOffset := y - mY
 
@@ -70,8 +71,8 @@ resize(_)
         WinRestore pid
 
     ; Determine nearest corner for resizing
-    nearestCornerX := (mX - x < w / 2) ? x : x + w
-    nearestCornerY := (mY - y < h / 2) ? y : y + h
+    nearestCornerX := (mX - x < w / 2) ? x + 2 : x + w - 1  ; 1 pixel for top-right corner
+    nearestCornerY := (mY - y < h / 2) ? y + 2 : y + h - 2  ; Adjusted for 2 pixels inside
 
     ; Move mouse to the nearest corner
     DllCall("SetCursorPos", "int", nearestCornerX, "int", nearestCornerY)
