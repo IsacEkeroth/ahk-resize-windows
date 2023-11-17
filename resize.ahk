@@ -3,13 +3,18 @@
 
 ~^s::reload
 
-modkey := "alt"
+modKey := "alt"
 minimizeOnMaximized := true
 
-hotkey "~" modkey, modkeyCheck
-hotkey modkey " & RButton", main
+hotif "not filters()"
+hotkey modkey " & RButton", resize; If windows with is bigger than monitor witdh set it witin the monitor width
+hotif
 
-filters(pid) {
+#hotif not filters()
+
+filters() {
+
+    MouseGetPos ,, &pid
     ; disable hotkey if desktop is active
     if (WinGetTitle(pid) = "Program Manager") {
         return true
@@ -28,51 +33,45 @@ filters(pid) {
     return false
 }
 
-modkeyCheck(_)
+
+resize(_)
 {
+    blockinput "on"
+
     ; Get window under mouse
     MouseGetPos ,, &pid
+    WinGetPos &x, &y, &w, &h, pid
 
-    if (filters(pid)) {
-        hotkey modkey " & RButton", "Off"
-        return
-    }
-
-    hotkey modkey " & RButton", "On"
-
-    ; Keep script from activating again changing focus
-    while GetKeyState(modkey) {
-        sleep 100
-    }
-
-}
-
-main(_)
-{
-    ; Get window under mouse
-    MouseGetPos ,, &pid
-
-    if (filters(pid)) {
-        return
-    }
-
-    ; Minimize if enabled
+    ; Unmaximize if enabled
     if (WinGetMinMax(pid) = 1 and minimizeOnMaximized) {
-        WinGetPos &x, &y,,, pid
         WinRestore pid
-        WinMove x, y,,pid
+        winmove x,y,,pid
     }
+
+    ; If window height is bigger than monitor height set it within the monitor height
+    if y + h > (sysget(17) - 10)
+        WinMove ,y,,sysget(17) - y - 10, pid
+
+    ; If windows with is bigger than monitor witdh set it witin the monitor width
+    if x + w > (sysget(16) - 10)
+        WinMove x, , sysget(16) - x - 10,, pid
+
 
     ; moves mouse to corner of the window and resizes until modkey is let go
     WinGetPos &x, &y,&w, &h, pid
-    DllCall("SetCursorPos", "int", x + w, "int", y + h)
+    DllCall("SetCursorPos", "int", x + w - 1, "int", y + h - 1)
+    send "{click down}"
 
+    blockinput "off"
 
-    while GetKeyState(modkey) {
-        MouseGetPos &xpos, &ypos
-        WinMove x, y, xpos, ypos, pid
-    }
+    keyWait "Alt"
+    keyWait "RButton"
+
+    send "{click up}"
 }
+
+
+
 
 /*!
     Checks if a window is in fullscreen mode.
