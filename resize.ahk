@@ -2,8 +2,7 @@
 #SingleInstance force
 
 ; Options
-modKey := "alt"
-minimizeOnMaximized := true
+modKey := "lwin"
 
 CoordMode "mouse", "screen"
 SetWinDelay 0
@@ -16,6 +15,8 @@ hotkey modKey " & LButton", move
 hotkey modkey " & RButton", resize
 hotif
 
+
+
 #hotif not filters()
 
 filters() {
@@ -23,11 +24,6 @@ filters() {
     MouseGetPos , , &pid
     ; disable hotkey if desktop is active
     if (WinGetTitle(pid) = "Program Manager" or WinGetTitle(pid) = "") {
-        return true
-    }
-
-    ; disable hotkey if active window is maximized of minimized
-    if (WinGetMinMax(pid) != 0 and not minimizeOnMaximized) {
         return true
     }
 
@@ -41,23 +37,40 @@ filters() {
 
 
 move(_) {
+    static lastClickTime := 0
+    doubleClickThreshold := 300 ; Adjust as needed
+    
     MouseGetPos &mX, &mY, &pid
-
-    ; Unmaximize if enabled
-    if (WinGetMinMax(pid) = 1 and minimizeOnMaximized) {
-        WinRestore pid
+    
+    currentTime := A_TickCount
+    timeSinceLastClick := currentTime - lastClickTime
+    lastClickTime := currentTime
+    
+    if (timeSinceLastClick <= doubleClickThreshold) {
+        ; Double click detected, toggle maximize/restore
+        if (WinGetMinMax(pid) = 1) {
+            WinRestore pid
+        } else {
+            WinMaximize pid
+        }
+        lastClickTime := 0
+        return
     }
-
+    
     WinGetPos &x, &y, &w, &h, pid
+    
     xOffset := x - mX
     yOffset := y - mY
 
     if IsModPlusKeyHeld("LButton") {
+        WinSetAlwaysOnTop 1, pid
         SetSystemCursor('SIZEALL')
         while (IsModPlusKeyHeld("LButton")) {
             MouseGetPos &mX, &mY
             winmove mX + xOffset, mY + yOffset, , , pid
         }
+
+        WinSetAlwaysOnTop 0, pid
         RestoreCursor()
     }
 }
@@ -69,9 +82,9 @@ resize(_)
     MouseGetPos &mX, &mY, &pid
     WinGetPos &x, &y, &w, &h, pid
 
-    ; Unmaximize if enabled
-    if (WinGetMinMax(pid) = 1 and minimizeOnMaximized)
+    if (WinGetMinMax(pid) = 1) {
         WinRestore pid
+    }
 
     ; Determine nearest corner for resizing
     nearestCornerX := (mX - x < w / 2) ? x + 2 : x + w - 1  ; 1 pixel for top-right corner
