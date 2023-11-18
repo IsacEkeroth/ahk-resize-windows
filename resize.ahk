@@ -6,7 +6,7 @@ modKey := "alt"
 minimizeOnMaximized := true
 
 CoordMode "mouse", "screen"
-SetWinDelay -1
+SetWinDelay 0
 
 monitorWidth := sysget(16)
 monitorHeight := sysget(17)
