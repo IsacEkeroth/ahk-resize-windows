@@ -31,9 +31,6 @@ minimizeOnMaximized := false
 ### inconsistent resizing
 Block input may not work correctly if not ran as administrator.
 
-### Choppy move
-As far as I know this is a limitation of ahk or the underlying windows apis for moving windows.
-
 ## Credits
 Fullscreen check by Nigh https://github.com/Nigh/isFullScreen \
 SetSystemCursor by iseahound https://github.com/iseahound/SetSystemCursor
