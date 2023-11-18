@@ -36,3 +36,4 @@ As far as I know this is a limitation of ahk or the underlying windows apis for 
 
 ## Credits
 Fullscreen check by Nigh https://github.com/Nigh/isFullScreen
+SetSystemCursor by iseahound https://github.com/iseahound/SetSystemCursor
