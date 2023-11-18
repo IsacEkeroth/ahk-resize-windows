@@ -1,9 +1,11 @@
 #Requires AutoHotkey v2.0
 #SingleInstance force
 
+~!s::reload
+
 ; Options
 modKey := "alt"
-minimizeOnMaximized := true
+minimizeOnMaximized := false
 
 CoordMode "mouse", "screen"
 SetWinDelay 0
@@ -62,7 +64,7 @@ move(_) {
 
 resize(_)
 {
-    blockinput "MouseMove"
+    ; blockinput "MouseMove"
     ; Get window under mouse
     MouseGetPos &mX, &mY, &pid
     WinGetPos &x, &y, &w, &h, pid
@@ -75,17 +77,24 @@ resize(_)
     nearestCornerX := (mX - x < w / 2) ? x + 2 : x + w - 1  ; 1 pixel for top-right corner
     nearestCornerY := (mY - y < h / 2) ? y + 2 : y + h - 2  ; Adjusted for 2 pixels inside
 
-    ; Move mouse to the nearest corner
-    DllCall("SetCursorPos", "int", nearestCornerX, "int", nearestCornerY)
 
-    send "{click down}"
-    blockinput "MouseMoveOff"
+
+
+    ; Move mouse to the nearest corner
+    ; DllCall("SetCursorPos", "int", nearestCornerX, "int", nearestCornerY)
+
+    ; send "{click down}"
+    ; blockinput "MouseMoveOff"
 
     while getKeyState(modkey) and getKeyState("RButton", "P") {
         ; The resizing happens as the mouse moves
+
+        MouseGetPos &mX, &mY
+        winmove mX, mY, , , pid
+
     }
 
-    send "{click up}"
+    ; send "{click up}"
     WinSetAlwaysOnTop 0, pid
 }
 
