@@ -58,21 +58,42 @@ move(_) {
         return
     }
 
-    WinGetPos &x, &y, &w, &h, pid
-
-    xOffset := x - mX
-    yOffset := y - mY
-
-    WinSetAlwaysOnTop 1, pid
+    windowState := WinGetMinMax(pid)
     SetSystemCursor('SIZEALL')
-    while (IsModPlusKeyHeld("LButton")) {
-        MouseGetPos &mX, &mY
-        winmove mX + xOffset, mY + yOffset, , , pid
+
+    ; Check if the window is maximized or in fullscreen
+    if (windowState = 1 || isFullScreen()) {
+        initialMonitor := SysGetMonitorContainingPoint(mX, mY)
+        while (IsModPlusKeyHeld("LButton")) {
+            MouseGetPos &currentMX, &currentMY
+            currentMonitor := SysGetMonitorContainingPoint(currentMX, currentMY)
+
+            if (initialMonitor != currentMonitor) {
+                ; Snap the window to the new monitor
+                SnapWindowToMonitor(pid, currentMonitor)
+                initialMonitor := currentMonitor  ; Update the initial monitor to the new one
+            }
+        }
+    } else {
+
+        WinGetPos &x, &y, &w, &h, pid
+
+        xOffset := x - mX
+        yOffset := y - mY
+
+        WinSetAlwaysOnTop 1, pid
+        while (IsModPlusKeyHeld("LButton")) {
+            MouseGetPos &mX, &mY
+            winmove mX + xOffset, mY + yOffset, , , pid
+        }
+
+        WinSetAlwaysOnTop 0, pid
     }
 
-    WinSetAlwaysOnTop 0, pid
     RestoreCursor()
+
 }
+
 
 resize(_) {
     ; Get the initial window position and size
@@ -117,6 +138,32 @@ resize(_) {
     }
 
     RestoreCursor()
+}
+
+; This function checks which monitor contains the specified point
+SysGetMonitorContainingPoint(x, y) {
+    monitors := []
+    monitorCount := MonitorGetCount()
+    Loop monitorCount {
+        MonitorGet(A_Index, &left, &top, &right, &bottom,)
+        if (x >= left && x <= right && y >= top && y <= bottom) {
+            return A_Index
+        }
+    }
+    return 1 ; Default to primary monitor if not found
+}
+
+; This function snaps the window to the specified monitor
+SnapWindowToMonitor(windowPID, monitorIndex) {
+    ; Get monitor dimensions
+    MonitorGet(monitorIndex, &MonitorLeft, &MonitorTop, &MonitorRight, &MonitorBottom)
+    ; Restore the window if it is maximized, to be able to move it
+    WinRestore("ahk_id " . windowPID)
+    WinGetPos(&windowX, &windowY, &windowWidth, &windowHeight, "ahk_id " . windowPID)
+    ; Move the window to the center of the new monitor
+    WinMove(MonitorLeft + (MonitorRight - MonitorLeft - windowWidth) // 2, MonitorTop + (MonitorBottom - MonitorTop - windowHeight) // 2, windowWidth, windowHeight, "ahk_id " . windowPID)
+    ; Maximize the window again
+    WinMaximize("ahk_id " . windowPID)
 }
 
 increaseOpacity(_) {
