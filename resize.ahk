@@ -131,7 +131,7 @@ adjustWindowOpacity(change) {
     MouseGetPos , , &pid
     currentOpacity := WinGetTransparent(pid)
     currentOpacity := currentOpacity ? currentOpacity : 255 ; If window is not transparent, set to 100%
-    newOpacity := Ceil(max(20, min(255, currentOpacity + (change * 2.55)))) ; 20-100% to 20-255 scale
+    newOpacity := Ceil(max(64, min(255, currentOpacity + (change * 2.55)))) ; Convert to 255-scale
     WinSetTransparent (newOpacity = 255 ? "Off" : newOpacity), pid
 }
 
