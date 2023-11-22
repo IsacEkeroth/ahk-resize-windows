@@ -2,7 +2,7 @@
 #SingleInstance force
 
 ; Options
-modKey := "lwin"
+modKey := "alt"
 
 CoordMode "mouse", "screen"
 SetWinDelay 0
