@@ -11,6 +11,8 @@ monitorWidth := sysget(16)
 monitorHeight := sysget(17)
 
 hotif "not filters()"
+hotkey modKey " & WheelUp", increaseOpacity
+hotkey modKey " & WheelDown", decreaseOpacity
 hotkey modKey " & LButton", move
 hotkey modkey " & RButton", resize
 hotif
@@ -103,6 +105,23 @@ resize(_)
     send "{click up}"
     WinSetAlwaysOnTop 0, pid
 }
+
+increaseOpacity(_) {
+    adjustWindowOpacity(10) ; Increase opacity by 10%
+}
+
+decreaseOpacity(_) {
+    adjustWindowOpacity(-10) ; Decrease opacity by 10%
+}
+
+adjustWindowOpacity(change) {
+    MouseGetPos , , &pid
+    currentOpacity := WinGetTransparent(pid)
+    currentOpacity := currentOpacity ? currentOpacity : 255 ; If window is not transparent, set to 100%
+    newOpacity := Ceil(max(20, min(255, currentOpacity + (change * 2.55)))) ; 20-100% to 20-255 scale
+    WinSetTransparent (newOpacity = 255 ? "Off" : newOpacity), pid
+}
+
 
 IsModPlusKeyHeld(key) {
     return (getKeyState(modKey) and getKeyState(key, "P"))
