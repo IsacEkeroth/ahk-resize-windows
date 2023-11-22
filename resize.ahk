@@ -18,7 +18,6 @@ hotkey modkey " & RButton", resize
 hotif
 
 
-
 #hotif not filters()
 
 filters() {
@@ -41,13 +40,13 @@ filters() {
 move(_) {
     static lastClickTime := 0
     doubleClickThreshold := 300 ; Adjust as needed
-    
+
     MouseGetPos &mX, &mY, &pid
-    
+
     currentTime := A_TickCount
     timeSinceLastClick := currentTime - lastClickTime
     lastClickTime := currentTime
-    
+
     if (timeSinceLastClick <= doubleClickThreshold) {
         ; Double click detected, toggle maximize/restore
         if (WinGetMinMax(pid) = 1) {
@@ -58,52 +57,66 @@ move(_) {
         lastClickTime := 0
         return
     }
-    
+
     WinGetPos &x, &y, &w, &h, pid
-    
+
     xOffset := x - mX
     yOffset := y - mY
 
-    if IsModPlusKeyHeld("LButton") {
-        WinSetAlwaysOnTop 1, pid
-        SetSystemCursor('SIZEALL')
-        while (IsModPlusKeyHeld("LButton")) {
-            MouseGetPos &mX, &mY
-            winmove mX + xOffset, mY + yOffset, , , pid
-        }
-
-        WinSetAlwaysOnTop 0, pid
-        RestoreCursor()
+    WinSetAlwaysOnTop 1, pid
+    SetSystemCursor('SIZEALL')
+    while (IsModPlusKeyHeld("LButton")) {
+        MouseGetPos &mX, &mY
+        winmove mX + xOffset, mY + yOffset, , , pid
     }
+
+    WinSetAlwaysOnTop 0, pid
+    RestoreCursor()
 }
 
-resize(_)
-{
-    blockinput "MouseMove"
-    ; Get window under mouse
+resize(_) {
+    ; Get the initial window position and size
     MouseGetPos &mX, &mY, &pid
     WinGetPos &x, &y, &w, &h, pid
 
-    if (WinGetMinMax(pid) = 1) {
-        WinRestore pid
+    ; Initialize the cumulative delta
+    cumulativeDeltaX := 0
+    cumulativeDeltaY := 0
+
+    ; Determine which corners are nearest
+    isLeft := mX - x < w // 2
+    isTop := mY - y < h // 2
+
+    if (isLeft && isTop) || (!isLeft && !isTop) {
+        SetSystemCursor("SIZENWSE") ; Top-left or bottom-right corner
+    } else {
+        SetSystemCursor("SIZENESW") ; Top-right or bottom-left corner
     }
-
-    ; Determine nearest corner for resizing
-    nearestCornerX := (mX - x < w / 2) ? x + 2 : x + w - 1  ; 1 pixel for top-right corner
-    nearestCornerY := (mY - y < h / 2) ? y + 2 : y + h - 2  ; Adjusted for 2 pixels inside
-
-    ; Move mouse to the nearest corner
-    DllCall("SetCursorPos", "int", nearestCornerX, "int", nearestCornerY)
-
-    send "{click down}"
-    blockinput "MouseMoveOff"
 
     while IsModPlusKeyHeld("RButton") {
-        ; The resizing happens as the mouse moves
+        MouseGetPos &currentMX, &currentMY
+
+        deltaX := currentMX - mX
+        deltaY := currentMY - mY
+
+        cumulativeDeltaX += deltaX
+        cumulativeDeltaY += deltaY
+
+        ; Set new dimensions based on the nearest corner
+        newW := isLeft ? w - cumulativeDeltaX : w + cumulativeDeltaX
+        newH := isTop ? h - cumulativeDeltaY : h + cumulativeDeltaY
+
+        ; Adjust the window position if dragging from the left or top
+        newX := isLeft ? x + cumulativeDeltaX : x
+        newY := isTop ? y + cumulativeDeltaY : y
+
+        WinMove newX, newY, newW, newH, pid
+
+        mX := currentMX
+        mY := currentMY
     }
 
-    send "{click up}"
-    WinSetAlwaysOnTop 0, pid
+    RestoreCursor()
 }
 
 increaseOpacity(_) {
