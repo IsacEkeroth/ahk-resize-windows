@@ -21,15 +21,9 @@ hotif
 #hotif not filters()
 
 filters() {
-
     MouseGetPos , , &pid
     ; disable hotkey if desktop is active
     if (WinGetTitle(pid) = "Program Manager" or WinGetTitle(pid) = "") {
-        return true
-    }
-
-    ; disable hotkey if active window is in fullscreen
-    if (isFullScreen()) {
         return true
     }
 
