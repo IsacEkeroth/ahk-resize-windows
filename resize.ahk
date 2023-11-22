@@ -2,7 +2,7 @@
 #SingleInstance force
 
 ; Options
-modKey := "alt"
+modKey := "lwin"
 
 CoordMode "mouse", "screen"
 SetWinDelay 0
@@ -93,6 +93,9 @@ resize(_) {
     ; Get the initial window position and size
     MouseGetPos &mX, &mY, &pid
     WinGetPos &x, &y, &w, &h, pid
+    if (WinGetMinMax(pid) = 1) {
+        WinRestore pid
+    }
 
     ; Initialize the cumulative delta
     cumulativeDeltaX := 0
