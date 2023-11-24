@@ -1,35 +1,37 @@
 # ahk-resize-windows
 > Resizes and moves windows like in dwm and KDE
 
-## Usage
+## Features
 ### Resize
-Press and hold the modkey(Standard is alt) and press right click to resize
+Resizes the window under the mouse from the closest corner to the mouse. 
+
+Press and hold the modkey and press right click to resize.
 
 ### Move
-Press and hold the modkey(Standard is alt) and press left click to move
-## Options
-### Modkey
-To change the modkey Change the string on the fifth line
-example using control: 
-```ahk
-; Options
-modKey := "ctrl"
-minimizeOnMaximized := true
-```
-[Keyname refrence](https://www.autohotkey.com/docs/v2/KeyList.htm)
-### Maximize behaviour
-Decides if resizing and moving should happen on maximized windows
+Press and hold the modkey and press left click to move it.
 
-To change the behavior change the option on the sixth line
-example turning it off
+#### Fullscreen snaping
+Move fullscreen windows between screens
+
+Warning: May crash games if running in fullscreen, works mostly fine in windowed fullscreen.
+
+
+### Opacity
+Changes the opacity of the window under the mouse.
+
+Press and hold the modkey and scroll up and down to adjust the opacity.
+
+## Configuration
+
+### Changing modkey 
+[Keyname refrence](https://www.autohotkey.com/docs/v2/KeyList.htm) \
+Edit the top of the script 
+
+Example using alt: 
 ```ahk
 ; Options
 modKey := "alt"
-minimizeOnMaximized := false
 ```
-## Notes
-### inconsistent resizing
-Block input may not work correctly if not ran as administrator.
 
 ## Credits
 Fullscreen check by Nigh https://github.com/Nigh/isFullScreen \
