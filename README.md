@@ -2,6 +2,8 @@
 
 > Resizes and moves windows like in dwm and KDE
 
+Standard modkey is meta(windows key)
+
 ## Features
 
 ### Resize
@@ -55,6 +57,11 @@ Example using alt:
 ; Options
 modKey := "alt"
 ```
+
+## Requirements
+
+[Autohotkey v2](https://www.autohotkey.com/) \
+Only tested on Windows 10 & 11
 
 ## Credits
 
