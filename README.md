@@ -16,7 +16,7 @@ Move the window under the mouse.
 
 Modkey + Left click.
 
-#### Fullscreen snaping
+### Fullscreen snaping
 
 Move fullscreen windows between screens.
 
