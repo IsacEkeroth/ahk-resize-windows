@@ -15,6 +15,7 @@ hotkey modKey " & WheelUp", increaseOpacity
 hotkey modKey " & WheelDown", decreaseOpacity
 hotkey modKey " & LButton", move
 hotkey modkey " & RButton", resize
+hotkey modkey " & MButton", minimize
 hotif
 
 
@@ -135,6 +136,13 @@ resize(_) {
     }
 
     RestoreCursor()
+}
+
+minimize(_) {
+    MouseGetPos , , &pid
+    WinGetPos , , , , pid
+
+    WinMinimize(pid)
 }
 
 ; This function checks which monitor contains the specified point
