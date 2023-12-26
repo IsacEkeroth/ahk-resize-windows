@@ -18,11 +18,13 @@ Move the window under the mouse.
 
 Modkey + Left click.
 
-### Fullscreen snaping
+### Fullscreen snapping
 
 Move fullscreen windows between screens.
 
 Drag a window to another screen.
+
+Note: Also works on maximized and fullscreened windows.
 
 Warning: May crash games if running in fullscreen, works mostly fine in windowed fullscreen.
 
@@ -50,7 +52,7 @@ Modkey + scroll up/down.
 
 To disable a feature comment out the hotkey at the top of the file.
 
-Example disabling opacity
+Example disabling opacity.
 
 Before:
 
