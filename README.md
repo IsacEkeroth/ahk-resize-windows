@@ -46,6 +46,36 @@ Modkey + scroll up/down.
 
 ## Configuration
 
+### Disabling features 
+
+To disable a feature comment out the hotkey at the top of the file.
+
+Example disabling opacity
+
+Before:
+
+```ahk
+hotif "not filters()"
+hotkey modKey " & WheelUp", increaseOpacity
+hotkey modKey " & WheelDown", decreaseOpacity
+hotkey modKey " & LButton", move
+hotkey modkey " & RButton", resize
+hotkey modkey " & MButton", minimize
+hotif
+```
+
+After:
+
+```ahk
+hotif "not filters()"
+; hotkey modKey " & WheelUp", increaseOpacity
+; hotkey modKey " & WheelDown", decreaseOpacity
+hotkey modKey " & LButton", move
+hotkey modkey " & RButton", resize
+hotkey modkey " & MButton", minimize
+hotif
+```
+
 ### Changing modkey
 
 [Keyname refrence](https://www.autohotkey.com/docs/v2/KeyList.htm) \
