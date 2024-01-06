@@ -1,36 +1,101 @@
 # ahk-resize-windows
+
 > Resizes and moves windows like in dwm and KDE
 
-## Usage
+Standard modkey is meta(windows key)
+
+## Features
+
 ### Resize
-Press and hold the modkey(Standard is alt) and press right click to resize
+
+Resizes the window under the mouse from the closest corner to the mouse.
+
+Modkey + Right click.
 
 ### Move
-Press and hold the modkey(Standard is alt) and press left click to move
-## Options
-### Modkey
-To change the modkey Change the string on the fifth line
-example using control: 
-```ahk
-; Options
-modKey := "ctrl"
-minimizeOnMaximized := true
-```
-[Keyname refrence](https://www.autohotkey.com/docs/v2/KeyList.htm)
-### Maximize behaviour
-Decides if resizing and moving should happen on maximized windows
 
-To change the behavior change the option on the sixth line
-example turning it off
+Move the window under the mouse.
+
+Modkey + Left click.
+
+### Fullscreen snapping
+
+Move fullscreen windows between screens.
+
+Drag a window to another screen.
+
+Note: Also works on maximized and fullscreened windows.
+
+Warning: May crash games if running in fullscreen, works mostly fine in windowed fullscreen.
+
+### Maximize
+
+Maximize windows.
+
+While moving a window double click left mouse button.
+
+### Minimize
+
+Minimize windows.
+
+Modkey + Middle mouse button.
+
+### Opacity
+
+Changes the opacity of the window under the mouse.
+
+Modkey + scroll up/down.
+
+## Configuration
+
+### Disabling features 
+
+To disable a feature comment out the hotkey at the top of the file.
+
+Example disabling opacity.
+
+Before:
+
+```ahk
+hotif "not filters()"
+hotkey modKey " & WheelUp", increaseOpacity
+hotkey modKey " & WheelDown", decreaseOpacity
+hotkey modKey " & LButton", move
+hotkey modkey " & RButton", resize
+hotkey modkey " & MButton", minimize
+hotif
+```
+
+After:
+
+```ahk
+hotif "not filters()"
+; hotkey modKey " & WheelUp", increaseOpacity
+; hotkey modKey " & WheelDown", decreaseOpacity
+hotkey modKey " & LButton", move
+hotkey modkey " & RButton", resize
+hotkey modkey " & MButton", minimize
+hotif
+```
+
+### Changing modkey
+
+[Keyname refrence](https://www.autohotkey.com/docs/v2/KeyList.htm) \
+Edit the top of the script
+
+Example using alt:
+
 ```ahk
 ; Options
 modKey := "alt"
-minimizeOnMaximized := false
 ```
-## Notes
-### inconsistent resizing
-Block input may not work correctly if not ran as administrator.
+
+## Requirements
+
+[Autohotkey v2](https://www.autohotkey.com/) \
+Only tested on Windows 10 & 11
 
 ## Credits
-Fullscreen check by Nigh https://github.com/Nigh/isFullScreen \
-SetSystemCursor by iseahound https://github.com/iseahound/SetSystemCursor
+
+[IsFullscreen by Nigh](https://github.com/Nigh/isFullScreen) \
+[SetSystemCursor by iseahound](https://github.com/iseahound/SetSystemCursor)
