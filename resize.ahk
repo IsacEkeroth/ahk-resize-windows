@@ -43,14 +43,14 @@ move(_) {
     lastClickTime := currentTime
 
     if (timeSinceLastClick <= doubleClickThreshold) {
+        lastClickTime := 0
+
         ; Double click detected, toggle maximize/restore
         if (WinGetMinMax(pid) = 1) {
             WinRestore pid
         } else {
             WinMaximize pid
         }
-        lastClickTime := 0
-        return
     }
 
     windowState := WinGetMinMax(pid)
