@@ -4,6 +4,8 @@
 
 Standard modkey is meta(windows key)
 
+Supersede by [Resizer2](https://github.com/alvesvaren/resizer2)
+
 ## Features
 
 ### Resize
